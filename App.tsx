@@ -72,17 +72,43 @@ const App: React.FC = () => {
                     const parsedData: QuarterlyData[] = [];
 
                     for (let i = 1; i < lines.length; i++) {
-                        const values = lines[i].split(',');
+                        // Handle CSV line splitting that respects quotes (simplified)
+                        // This regex matches quoted strings or unquoted values followed by comma or end of line
+                        const values: string[] = [];
+                        let rowStr = lines[i];
+                        let inQuote = false;
+                        let currentValue = '';
+                        
+                        for(let charIndex = 0; charIndex < rowStr.length; charIndex++) {
+                            const char = rowStr[charIndex];
+                            if (char === '"') {
+                                inQuote = !inQuote;
+                            } else if (char === ',' && !inQuote) {
+                                values.push(currentValue);
+                                currentValue = '';
+                            } else {
+                                currentValue += char;
+                            }
+                        }
+                        values.push(currentValue);
+
                         if (values.length < headers.length) continue;
 
                         const row: any = {};
                         headers.forEach((h, index) => {
-                            const val = values[index]?.trim();
+                            let val = values[index]?.trim();
+                            // Remove surrounding quotes if present
+                            if (val.startsWith('"') && val.endsWith('"')) {
+                                val = val.substring(1, val.length - 1);
+                            }
+
                             if (h === 'quarter' || h === 'type') {
                                 row[h] = val;
                             } else {
-                                const num = parseFloat(val);
-                                row[h] = isNaN(num) ? undefined : num; // Use undefined for missing nums to trigger calcs
+                                // Remove commas from numbers (e.g., "1,234.56" -> 1234.56)
+                                const cleanVal = val.replace(/,/g, '');
+                                const num = parseFloat(cleanVal);
+                                row[h] = isNaN(num) ? undefined : num;
                             }
                         });
                         
@@ -90,7 +116,10 @@ const App: React.FC = () => {
                         row.newDirect = row.newDirect ?? 0;
                         row.oldDirect = row.oldDirect ?? 0;
                         row.oldMeta = row.oldMeta ?? 0;
-                        row.total = row.total ?? (row.newDirect + row.oldDirect + row.oldMeta);
+                        
+                        // Enforce consistency: Total MUST be the sum of its parts
+                        // This prevents visualization bugs where stacked area (sum) > total line
+                        row.total = row.newDirect + row.oldDirect + row.oldMeta;
 
                         if (row.type === 'Actual' || !row.type) { // Assume Actual if type missing
                             row.type = 'Actual';
@@ -102,18 +131,18 @@ const App: React.FC = () => {
                     const processedData = parsedData.map((row, index) => {
                         const prev = index > 0 ? parsedData[index - 1] : null;
 
-                        // 1. Calculate Percentages if missing
+                        // 1. Calculate Percentages
                         if (row.total > 0) {
-                            if (row.newPercent === undefined) row.newPercent = (row.newDirect / row.total) * 100;
-                            if (row.oldDirectPercent === undefined) row.oldDirectPercent = (row.oldDirect / row.total) * 100;
-                            if (row.oldMetaPercent === undefined) row.oldMetaPercent = (row.oldMeta / row.total) * 100;
+                            row.newPercent = (row.newDirect / row.total) * 100;
+                            row.oldDirectPercent = (row.oldDirect / row.total) * 100;
+                            row.oldMetaPercent = (row.oldMeta / row.total) * 100;
                         }
 
                         // 2. Calculate Sub-segment Percentages
-                        if (row.newOfDirectPercent === undefined && (row.newDirect + row.oldDirect) > 0) {
+                        if ((row.newDirect + row.oldDirect) > 0) {
                             row.newOfDirectPercent = (row.newDirect / (row.newDirect + row.oldDirect)) * 100;
                         }
-                        if (row.newOfMetaPercent === undefined && (row.newDirect + row.oldMeta) > 0) {
+                        if ((row.newDirect + row.oldMeta) > 0) {
                             row.newOfMetaPercent = (row.newDirect / (row.newDirect + row.oldMeta)) * 100;
                         }
 
@@ -204,7 +233,7 @@ const App: React.FC = () => {
             case 'Data Table':
                 return <DataTableView data={fullData} />;
             case 'Analysis':
-                 return <AnalysisView baseParameters={parameters} />;
+                 return <AnalysisView baseParameters={parameters} lastActualData={lastActualQuarter} />;
             case 'Forecast':
             default:
                 return <ForecastView data={fullData} />;

@@ -28,8 +28,11 @@ export const useSimulation = (params: SimulationParameters, lastActualData?: Qua
             lastQuarterStr = lastActualData.quarter; 
 
             // 1. Calibrate Starting New User Volume
-            if (params.newUIDsAvgOrders > 0 && lastActualData.newDirect > 0) {
-                 lastNewUIDs = lastActualData.newDirect / params.newUIDsAvgOrders;
+            // Use DEFAULT_PARAMETERS to anchor the population estimation. 
+            // This ensures that changing the simulation parameter (params.newUIDsAvgOrders) 
+            // reflects a change in behavior (more orders per user) rather than a change in history (fewer users).
+            if (DEFAULT_PARAMETERS.newUIDsAvgOrders > 0 && lastActualData.newDirect > 0) {
+                 lastNewUIDs = lastActualData.newDirect / DEFAULT_PARAMETERS.newUIDsAvgOrders;
             }
 
             // 2. Calibrate Retention Volume (Pools)

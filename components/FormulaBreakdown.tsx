@@ -49,6 +49,9 @@ const FormulaBreakdown: React.FC = () => {
                                     <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
                                     <span>New UIDs × (1 + Growth %)</span>
                                 </div>
+                                <div className="pl-3.5 text-gray-500 flex items-center">
+                                    <span>× Avg Orders</span>
+                                </div>
                             </div>
                         </div>
 
