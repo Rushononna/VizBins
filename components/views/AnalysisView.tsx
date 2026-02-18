@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { SimulationParameters, QuarterlyData } from '../../types';
 import { DEFAULT_PARAMETERS } from '../../constants';
@@ -17,6 +18,10 @@ const PARAM_CONFIG: Record<string, { label: string; min: number; max: number; st
     oldMetaRepurchaseRate: { label: 'Old Meta Repurchase Rate', min: 5, max: 50, step: 1, suffix: '%' },
     oldDirectAvgOrders: { label: 'Avg Orders (Old Direct)', min: 0.5, max: 2.0, step: 0.05, suffix: '' },
     oldMetaAvgOrders: { label: 'Avg Orders (Old Meta)', min: 0.5, max: 2.0, step: 0.05, suffix: '' },
+    seasonalityQ1: { label: 'Seasonality Q1', min: 0.5, max: 1.5, step: 0.05, suffix: 'x' },
+    seasonalityQ2: { label: 'Seasonality Q2', min: 0.5, max: 1.5, step: 0.05, suffix: 'x' },
+    seasonalityQ3: { label: 'Seasonality Q3', min: 0.5, max: 1.5, step: 0.05, suffix: 'x' },
+    seasonalityQ4: { label: 'Seasonality Q4', min: 0.5, max: 1.5, step: 0.05, suffix: 'x' },
 };
 
 const AnalysisView: React.FC<AnalysisViewProps> = ({ lastActualData }) => {
@@ -77,7 +82,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ lastActualData }) => {
                         <div className="p-3 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 font-semibold text-xs text-gray-500 uppercase tracking-wide">
                             Select Variable
                         </div>
-                        <div className="divide-y divide-gray-100 dark:divide-slate-700">
+                        <div className="divide-y divide-gray-100 dark:divide-slate-700 max-h-[300px] overflow-y-auto">
                             {Object.entries(PARAM_CONFIG).map(([key, config]) => (
                                 <button
                                     key={key}
@@ -143,7 +148,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ lastActualData }) => {
                     {/* Impact Summary */}
                     <div className={`p-4 rounded-xl border ${totalImpact >= 0 ? 'bg-emerald-50 border-emerald-100 dark:bg-emerald-900/10 dark:border-emerald-800' : 'bg-rose-50 border-rose-100 dark:bg-rose-900/10 dark:border-rose-800'}`}>
                         <div className="text-xs font-bold uppercase tracking-wide mb-1 opacity-70">
-                            {totalImpact >= 0 ? 'Net Volume Gain' : 'Net Volume Loss'} (4 Qtrs)
+                            {totalImpact >= 0 ? 'Net Volume Gain' : 'Net Volume Loss'} (8 Qtrs)
                         </div>
                         <div className={`text-2xl font-bold ${totalImpact >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
                             {totalImpact > 0 ? '+' : ''}{totalImpact.toLocaleString()}

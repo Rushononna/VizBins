@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { SimulationParameters } from '../../types';
 import { Save, RotateCcw } from 'lucide-react';
@@ -76,6 +77,48 @@ const ParametersView: React.FC<ParametersViewProps> = ({ parameters, onParameter
                             max={3.0}
                             step={0.01}
                             onChange={(v) => onParameterChange('newUIDsAvgOrders', v)}
+                        />
+                    </div>
+                </div>
+
+                {/* Seasonality */}
+                <div className="bg-white dark:bg-slate-800/50 p-6 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm">
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-700 pb-4 mb-6 flex items-center">
+                        <span className="w-1.5 h-4 bg-emerald-500 rounded-full mr-2"></span>
+                        Seasonality Adjustments (Multiplier)
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-8">
+                        <SliderControl
+                            label="Q1 Modifier"
+                            value={parameters.seasonalityQ1}
+                            min={0.5}
+                            max={1.5}
+                            step={0.05}
+                            onChange={(v) => onParameterChange('seasonalityQ1', v)}
+                        />
+                        <SliderControl
+                            label="Q2 Modifier"
+                            value={parameters.seasonalityQ2}
+                            min={0.5}
+                            max={1.5}
+                            step={0.05}
+                            onChange={(v) => onParameterChange('seasonalityQ2', v)}
+                        />
+                        <SliderControl
+                            label="Q3 Modifier"
+                            value={parameters.seasonalityQ3}
+                            min={0.5}
+                            max={1.5}
+                            step={0.05}
+                            onChange={(v) => onParameterChange('seasonalityQ3', v)}
+                        />
+                        <SliderControl
+                            label="Q4 Modifier"
+                            value={parameters.seasonalityQ4}
+                            min={0.5}
+                            max={1.5}
+                            step={0.05}
+                            onChange={(v) => onParameterChange('seasonalityQ4', v)}
                         />
                     </div>
                 </div>

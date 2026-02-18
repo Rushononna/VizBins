@@ -1,3 +1,4 @@
+
 import { useMemo } from 'react';
 import { SimulationParameters, QuarterlyData } from '../types';
 import { SIMULATION_BASE_UIDS, ACTUAL_2023_DATA, DEFAULT_PARAMETERS } from '../constants';
@@ -11,7 +12,7 @@ const MODEL_DEFAULT_OLD_VOLUME =
 export const useSimulation = (params: SimulationParameters, lastActualData?: QuarterlyData): QuarterlyData[] => {
     return useMemo(() => {
         const forecast: QuarterlyData[] = [];
-        const quartersToForecast = 4;
+        const quartersToForecast = 8; // Extended to 2 years (8 quarters)
 
         // Initialize user pools (Defaults)
         let currentPoolOldDirect = SIMULATION_BASE_UIDS.oldDirectUIDs;
@@ -65,18 +66,25 @@ export const useSimulation = (params: SimulationParameters, lastActualData?: Qua
             }
             const forecastQuarterStr = `${currentYear} Q${currentQuarter}`;
 
+            // Get Seasonality Modifier
+            // params.seasonalityQ1, params.seasonalityQ2, etc.
+            const seasonalityKey = `seasonalityQ${currentQuarter}` as keyof SimulationParameters;
+            const seasonalModifier = params[seasonalityKey] !== undefined ? params[seasonalityKey] : 1.0;
+
             // 1. Calculate New Users for this quarter
             const currentNewUIDs = lastNewUIDs * (1 + params.newUIDsQuarterlyGrowth / 100);
             
             // 2. Calculate Orders from New Users (New Direct)
-            const newDirectOrders = Math.round(currentNewUIDs * params.newUIDsAvgOrders);
+            // Apply Seasonality
+            const newDirectOrders = Math.round(currentNewUIDs * params.newUIDsAvgOrders * seasonalModifier);
 
             // 3. Calculate Orders from Old Users (Retention)
             const activeOldDirectUsers = currentPoolOldDirect * (params.oldDirectRepurchaseRate / 100);
             const activeOldMetaUsers = currentPoolOldMeta * (params.oldMetaRepurchaseRate / 100);
 
-            const totalOrdersFromOldDirectPool = activeOldDirectUsers * params.oldDirectAvgOrders;
-            const totalOrdersFromOldMetaPool = activeOldMetaUsers * params.oldMetaAvgOrders;
+            // Apply Seasonality to retention orders as well
+            const totalOrdersFromOldDirectPool = activeOldDirectUsers * params.oldDirectAvgOrders * seasonalModifier;
+            const totalOrdersFromOldMetaPool = activeOldMetaUsers * params.oldMetaAvgOrders * seasonalModifier;
 
             // 4. Split Retention Orders into Channels
             const ordersFromOldDirectToDirect = totalOrdersFromOldDirectPool * (params.oldDirectUserRepurchaseDirectPercent / 100);

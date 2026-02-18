@@ -1,3 +1,4 @@
+
 export interface QuarterlyData {
     quarter: string;
     year?: number; // Optional as it might be derived or not present in raw constants
@@ -27,6 +28,11 @@ export interface SimulationParameters {
     oldMetaAvgOrders: number; // decimal
     oldDirectUserRepurchaseDirectPercent: number; // %
     oldMetaUserRepurchaseDirectPercent: number; // %
+    // Seasonality Modifiers (Multiplier, e.g. 1.0 = neutral, 1.1 = +10%)
+    seasonalityQ1: number;
+    seasonalityQ2: number;
+    seasonalityQ3: number;
+    seasonalityQ4: number;
 }
 
 export interface Scenario {

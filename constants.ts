@@ -1,3 +1,4 @@
+
 import type { QuarterlyData, SimulationParameters, Scenario } from './types';
 
 export const ACTUAL_2023_DATA: QuarterlyData[] = [
@@ -75,6 +76,11 @@ export const DEFAULT_PARAMETERS: SimulationParameters = {
   oldMetaAvgOrders: 0.80,
   oldDirectUserRepurchaseDirectPercent: 51.00,
   oldMetaUserRepurchaseDirectPercent: 53.00,
+  // Seasonality Defaults (1.0 = Neutral)
+  seasonalityQ1: 1.0,
+  seasonalityQ2: 1.0,
+  seasonalityQ3: 1.0,
+  seasonalityQ4: 1.0,
 };
 
 export const SCENARIOS: Scenario[] = [
@@ -83,6 +89,18 @@ export const SCENARIOS: Scenario[] = [
     description: "Current parameters based on historic trends.",
     color: "#3b82f6",
     parameters: DEFAULT_PARAMETERS,
+  },
+  {
+    name: "Seasonality Adjusted",
+    description: "Models a typical Q1 dip and Q2/Q4 peaks.",
+    color: "#8b5cf6",
+    parameters: {
+      ...DEFAULT_PARAMETERS,
+      seasonalityQ1: 0.85, // 15% dip
+      seasonalityQ2: 1.10, // 10% peak
+      seasonalityQ3: 1.05, // 5% peak
+      seasonalityQ4: 1.20, // 20% peak
+    }
   },
   {
     name: "Optimistic Growth",
