@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ComposedChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Cell } from 'recharts';
 import { QuarterlyData } from '../../types';
@@ -37,7 +38,6 @@ const ForecastView: React.FC<ForecastViewProps> = ({ data }) => {
     // Find the last actual quarter to place the separator line
     const actualData = data.filter(d => d.type === 'Actual');
     const lastActualQuarter = actualData.length > 0 ? actualData[actualData.length - 1].quarter : null;
-    const lastActualIndex = actualData.length - 1;
 
     // Prepare YoY Data
     const yoyData = data.map((current, index) => {
@@ -126,6 +126,8 @@ const ForecastView: React.FC<ForecastViewProps> = ({ data }) => {
                             axisLine={false}
                             tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
                             dx={-10}
+                            domain={[0, (dataMax: number) => Math.ceil(dataMax / 50000) * 50000]}
+                            tickCount={6}
                         />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend iconType="plainline" wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }} />
