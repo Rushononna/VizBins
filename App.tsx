@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSimulation } from './hooks/useSimulation';
 import { DEFAULT_PARAMETERS, ACTUAL_2023_DATA, SCENARIOS } from './constants';
@@ -12,12 +13,14 @@ import ParametersView from './components/views/ParametersView';
 import ScenariosView from './components/views/ScenariosView';
 import DataTableView from './components/views/DataTableView';
 import AnalysisView from './components/views/AnalysisView';
+import SimulationFAQ from './components/SimulationFAQ';
 
 const App: React.FC = () => {
     const [activeTab, setActiveTab] = useState<string>('Forecast');
     const [parameters, setParameters] = useState<SimulationParameters>(DEFAULT_PARAMETERS);
     const [scenarios, setScenarios] = useState<Scenario[]>(SCENARIOS);
     const [actualData, setActualData] = useState<QuarterlyData[]>(ACTUAL_2023_DATA);
+    const [isFAQOpen, setIsFAQOpen] = useState(false);
 
     // Pass the last actual quarter to the simulation hook to anchor the forecast
     const forecastData = useSimulation(parameters, actualData[actualData.length - 1]);
@@ -242,8 +245,13 @@ const App: React.FC = () => {
 
     return (
         <div className="bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-200 font-sans transition-colors duration-200 min-h-screen p-4 md:p-8">
+            <SimulationFAQ isOpen={isFAQOpen} onClose={() => setIsFAQOpen(false)} />
             <div className="max-w-7xl mx-auto space-y-6">
-                <Header onExportCSV={handleExportCSV} onUploadData={handleUploadData} />
+                <Header 
+                    onExportCSV={handleExportCSV} 
+                    onUploadData={handleUploadData} 
+                    onOpenFAQ={() => setIsFAQOpen(true)}
+                />
                 <FormulaBreakdown />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
