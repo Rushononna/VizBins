@@ -47,12 +47,12 @@ const ForecastView: React.FC<ForecastViewProps> = ({ data }) => {
                 <div className="flex items-center space-x-3 text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700">
                     <div className="flex items-center">
                         <span className="w-2.5 h-2.5 rounded-full bg-blue-500 mr-1.5"></span>
-                        <span>Actual (2023)</span>
+                        <span>Actual</span>
                     </div>
                     <div className="w-px h-4 bg-gray-300 dark:bg-slate-600 mx-2"></div>
                     <div className="flex items-center">
                         <span className="w-2.5 h-2.5 rounded-full bg-indigo-500/50 border border-indigo-500 mr-1.5"></span>
-                        <span>Forecast (2024+)</span>
+                        <span>Forecast</span>
                     </div>
                 </div>
             </div>

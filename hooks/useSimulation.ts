@@ -11,29 +11,28 @@ const MODEL_DEFAULT_OLD_VOLUME =
 export const useSimulation = (params: SimulationParameters, lastActualData?: QuarterlyData): QuarterlyData[] => {
     return useMemo(() => {
         const forecast: QuarterlyData[] = [];
-        const quartersToForecast = 4; // 2024 Q1 to Q4
+        const quartersToForecast = 4;
 
         // Initialize user pools (Defaults)
         let currentPoolOldDirect = SIMULATION_BASE_UIDS.oldDirectUIDs;
         let currentPoolOldMeta = SIMULATION_BASE_UIDS.oldMetaUIDs;
         let lastNewUIDs = SIMULATION_BASE_UIDS.newUIDs_2023_Q4;
+        
+        // Determine starting point from default constants or provided lastActualData
         let lastTotal = ACTUAL_2023_DATA[ACTUAL_2023_DATA.length - 1].total;
+        let lastQuarterStr = ACTUAL_2023_DATA[ACTUAL_2023_DATA.length - 1].quarter;
 
-        // If uploaded data exists, calibrate the simulation to match the provided history
+        // If uploaded data exists (or just passed from App state), calibrate the simulation
         if (lastActualData) {
             lastTotal = lastActualData.total;
+            lastQuarterStr = lastActualData.quarter; 
 
             // 1. Calibrate Starting New User Volume
-            // If we have actual New Direct orders, derive the starting New UIDs from them
-            // This ensures the "New Users" forecast line starts from the actuals provided
             if (params.newUIDsAvgOrders > 0 && lastActualData.newDirect > 0) {
                  lastNewUIDs = lastActualData.newDirect / params.newUIDsAvgOrders;
             }
 
             // 2. Calibrate Retention Volume (Pools)
-            // If the actual Old volume differs significantly from what our default constants produce,
-            // we scale the pool sizes to match the reality of the uploaded data.
-            // This prevents a "jump" in the chart between Actual Q4 and Forecast Q1.
             const actualOldVolume = lastActualData.oldDirect + lastActualData.oldMeta;
             
             if (MODEL_DEFAULT_OLD_VOLUME > 0 && actualOldVolume > 0) {
@@ -43,7 +42,26 @@ export const useSimulation = (params: SimulationParameters, lastActualData?: Qua
             }
         }
 
+        // Parse last quarter string to determine start year/quarter for forecast
+        // Supports format "YYYY QX"
+        let currentYear = 2023;
+        let currentQuarter = 4;
+        
+        const quarterMatch = lastQuarterStr.match(/(\d{4})\s*Q(\d)/);
+        if (quarterMatch) {
+            currentYear = parseInt(quarterMatch[1]);
+            currentQuarter = parseInt(quarterMatch[2]);
+        }
+
         for (let i = 1; i <= quartersToForecast; i++) {
+            // Increment quarter logic
+            currentQuarter++;
+            if (currentQuarter > 4) {
+                currentQuarter = 1;
+                currentYear++;
+            }
+            const forecastQuarterStr = `${currentYear} Q${currentQuarter}`;
+
             // 1. Calculate New Users for this quarter
             const currentNewUIDs = lastNewUIDs * (1 + params.newUIDsQuarterlyGrowth / 100);
             
@@ -85,8 +103,8 @@ export const useSimulation = (params: SimulationParameters, lastActualData?: Qua
             lastTotal = total;
 
             forecast.push({
-                quarter: `2024 Q${i}`,
-                year: 2024,
+                quarter: forecastQuarterStr,
+                year: currentYear,
                 newDirect: newDirectOrders,
                 oldDirect: oldDirectOrders,
                 oldMeta: oldMetaOrders,

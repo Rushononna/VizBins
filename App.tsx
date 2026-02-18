@@ -219,7 +219,7 @@ const App: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <StatCard 
-                        title="Total Orders (2024 Q1)" 
+                        title={`Total Orders (${firstForecastQuarter ? firstForecastQuarter.quarter : 'Forecast'})`}
                         value={firstForecastQuarter?.total} 
                         growth={totalOrdersGrowth} 
                         isMain
