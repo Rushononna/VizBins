@@ -148,7 +148,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ lastActualData }) => {
                     {/* Impact Summary */}
                     <div className={`p-4 rounded-xl border ${totalImpact >= 0 ? 'bg-emerald-50 border-emerald-100 dark:bg-emerald-900/10 dark:border-emerald-800' : 'bg-rose-50 border-rose-100 dark:bg-rose-900/10 dark:border-rose-800'}`}>
                         <div className="text-xs font-bold uppercase tracking-wide mb-1 opacity-70">
-                            {totalImpact >= 0 ? 'Net Volume Gain' : 'Net Volume Loss'} (8 Qtrs)
+                            {totalImpact >= 0 ? 'Net Volume Gain' : 'Net Volume Loss'} (4 Qtrs)
                         </div>
                         <div className={`text-2xl font-bold ${totalImpact >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
                             {totalImpact > 0 ? '+' : ''}{totalImpact.toLocaleString()}
@@ -213,7 +213,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ lastActualData }) => {
                                         <Cell 
                                             key={`cell-${index}`} 
                                             fill={entry.delta >= 0 ? '#10b981' : '#f43f5e'} 
-                                            radius={entry.delta >= 0 ? [4, 4, 0, 0] : [0, 0, 4, 4]}
+                                            radius={(entry.delta >= 0 ? [4, 4, 0, 0] : [0, 0, 4, 4]) as any}
                                         />
                                     ))}
                                 </Bar>

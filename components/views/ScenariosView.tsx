@@ -36,7 +36,9 @@ const ScenariosView: React.FC<ScenariosViewProps> = ({ scenarios, onDeleteScenar
                                     <Trash2 className="w-4 h-4" />
                                 </button>
                             ) : (
-                                <CheckCircle className="w-5 h-5 text-blue-500/50" title="Default Scenario" />
+                                <div title="Default Scenario">
+                                    <CheckCircle className="w-5 h-5 text-blue-500/50" />
+                                </div>
                             )}
                         </div>
                         

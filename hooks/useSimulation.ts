@@ -12,7 +12,7 @@ const MODEL_DEFAULT_OLD_VOLUME =
 export const useSimulation = (params: SimulationParameters, lastActualData?: QuarterlyData): QuarterlyData[] => {
     return useMemo(() => {
         const forecast: QuarterlyData[] = [];
-        const quartersToForecast = 8; // Extended to 2 years (8 quarters)
+        const quartersToForecast = 4; // Forecast only next 4 quarters
 
         // Initialize user pools (Defaults)
         let currentPoolOldDirect = SIMULATION_BASE_UIDS.oldDirectUIDs;
@@ -20,11 +20,13 @@ export const useSimulation = (params: SimulationParameters, lastActualData?: Qua
         let lastNewUIDs = SIMULATION_BASE_UIDS.newUIDs_2023_Q4;
         
         // Determine starting point from default constants or provided lastActualData
-        let lastTotal = ACTUAL_2023_DATA[ACTUAL_2023_DATA.length - 1].total;
-        let lastQuarterStr = ACTUAL_2023_DATA[ACTUAL_2023_DATA.length - 1].quarter;
+        const defaultLastData = ACTUAL_2023_DATA[ACTUAL_2023_DATA.length - 1];
+        let lastTotal = defaultLastData.total;
+        let lastQuarterStr = defaultLastData.quarter;
 
         // If uploaded data exists (or just passed from App state), calibrate the simulation
-        if (lastActualData) {
+        // Ensure lastActualData has a valid quarter string before using it
+        if (lastActualData && typeof lastActualData.quarter === 'string') {
             lastTotal = lastActualData.total;
             lastQuarterStr = lastActualData.quarter; 
 
@@ -51,10 +53,12 @@ export const useSimulation = (params: SimulationParameters, lastActualData?: Qua
         let currentYear = 2023;
         let currentQuarter = 4;
         
-        const quarterMatch = lastQuarterStr.match(/(\d{4})\s*Q(\d)/);
-        if (quarterMatch) {
-            currentYear = parseInt(quarterMatch[1]);
-            currentQuarter = parseInt(quarterMatch[2]);
+        if (lastQuarterStr) {
+            const quarterMatch = lastQuarterStr.match(/(\d{4})\s*Q(\d)/);
+            if (quarterMatch) {
+                currentYear = parseInt(quarterMatch[1]);
+                currentQuarter = parseInt(quarterMatch[2]);
+            }
         }
 
         for (let i = 1; i <= quartersToForecast; i++) {
