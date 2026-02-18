@@ -1,0 +1,5 @@
+{
+  "name": "Flight Order Simulation Dashboard",
+  "description": "A comprehensive historical and forecasting dashboard for quarterly flight orders, featuring scenario modeling, seasonality adjustments, and interactive visualizations.",
+  "requestFramePermissions": []
+}
